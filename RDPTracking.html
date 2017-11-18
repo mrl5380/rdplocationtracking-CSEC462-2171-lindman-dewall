@@ -17,7 +17,7 @@
         border: none;
         color: white;
         padding: 16px 32px;
-        width: 250px;
+        width: 200px;
         text-align: center;
         text-decoration: none;
         display: inline-block;
@@ -55,6 +55,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </head>
 <body>
+<h1> Remote Desktop Tracking Tool
+<div id="Function">
+<label class="button button1" onclick="loadData()">Load Capture File</label>
+</div>
+</h1>
     <!--D3.js-->
     <script type="text/javascript">
       // Map Formatting
@@ -82,6 +87,34 @@
       });
       
       function loadData() {
+        // Cleanup old map
+        d3.select("svg").remove();
+        
+        // Remake Map
+        // Map Formatting
+        var width = 1300;
+        var height = 500;
+  
+        var projection = d3.geo.mercator();
+        
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+        var path = d3.geo.path()
+            .projection(projection);
+        var g = svg.append("g");
+        
+        // Map file to load (can't read local file so json map has to come from either a local webserver or one that is CORS enabled)
+        d3.json("https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_countries.geojson", function(error, topology) {
+            if (error) return console.error(error);
+            
+            g.selectAll("path")
+              .data(topology.features)
+              .enter()
+              .append("path")
+              .attr("d", path)
+        });
+        // Get Data from webserver
         d3.csv("http://localhost:8887/test", function(error, data) {
           for (n = 0; n < data.length; n++) {
             if (data[n].Protocol == "RDP") {
@@ -93,23 +126,68 @@
               var destlat = getLatitude(destip);
               var destlong = getLongitude(destip);
               
-              var srcpoint = [srclong, srclat];
-              var destpoint = [destlong, destlat];
+              var srcpoint = [srclong, srclat, srcip];
+              var destpoint = [destlong, destlat, destip];
               
+              var tooltip = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .attr("opactiy", 0)
+                .style("position", "absolute")
+                .style("padding", "0 10px");
+              // Create Points on map
               svg.selectAll("scircle")
                 .data([srcpoint]).enter()
                 .append("circle")
-                .attr("cx", function (d) { return projection(d)[0]; })
-                .attr("cy", function (d) { return projection(d)[1]; })
-                .attr("r", "2px")
-                .style("fill", "red")
+                .attr("cx", function(d) { return projection(d)[0]; })
+                .attr("cy", function(d) { return projection(d)[1]; })
+                .attr("r", "6px")
+                .style("fill", "darkred")
+                .on("mouseover", function(d) {
+                  d3.select(this)
+                    .style("fill", "red")
+                    .attr("r", "10px")
+                  tooltip.transition()
+                    .style("opacity", 1)
+                    .text("Source: " + d[2])
+                    .style("left", (d3.event.pageX-50) + "px")
+                    .style("top", (d3.event.pageY+30) + "px")
+                    .duration(10);
+                })
+                .on("mouseout", function() {
+                  d3.select(this)
+                    .style("fill", "darkred")
+                    .attr("r", "6px")
+                  tooltip.transition()
+                    .style("opacity", "0")
+                    .duration(50);
+                });
               svg.selectAll("dcircle")
                 .data([destpoint]).enter()
                 .append("circle")
-                .attr("cx", function (d) { return projection(d)[0]; })
-                .attr("cy", function (d) { return projection(d)[1]; })
-                .attr("r", "2px")
+                .attr("cx", function(d) { return projection(d)[0]; })
+                .attr("cy", function(d) { return projection(d)[1]; })
+                .attr("r", "6px")
                 .style("fill", "blue")
+                .on("mouseover", function(d) {
+                  d3.select(this)
+                    .style("fill", "aqua")
+                    .attr("r", "10px")
+                  tooltip.transition()
+                    .style("opacity", 1)
+                    .text("Destination: " + d[2])
+                    .style("left", (d3.event.pageX-50) + "px")
+                    .style("top", (d3.event.pageY+30) + "px")
+                    .duration(10);
+                })
+                .on("mouseout", function() {
+                  d3.select(this)
+                    .style("fill", "blue")
+                    .attr("r", "6px")
+                  tooltip.transition()
+                    .style("opacity", "0")
+                    .duration(50);
+                })
+              // Draw arcs between points
               var route = {
                 type: "LineString",
                 coordinates:[
@@ -123,7 +201,7 @@
           }
           });
       }
-    
+      
       function getLatitude(ip) {
         var address = "http://freegeoip.net/xml/" + ip;
         var xml = new XMLHttpRequest();
@@ -162,10 +240,5 @@
       });
       //svg.call(zoom)
 </script>
-<h1> Remote Desktop Tracking Tool </h1>
-<p></p>
-<div id="Function">
-<label class="button button1" onclick="loadData()">Load Capture File</label>
-</div>
 </body>
 </html>
