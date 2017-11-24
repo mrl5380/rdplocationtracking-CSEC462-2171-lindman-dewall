@@ -1,8 +1,5 @@
 rdplocationtracking-CSEC462-2171-lindman-dewall
 
-Matthew Lindman - mrl5380@g.rit.edu, Trevor Dewall - td2334@g.rit.edu
-
-
 RDP Location Tracking Tool
 --------------------------------------------------
 
@@ -24,3 +21,5 @@ In order to get the tool running in the html code is the d3.csv('filelocation') 
 This address needs to be changed to the http location of the csv file to load.
 Once that is done, save the file and simple open the web page and click load capture file.
 This will display all RDP connection host(blue) and clients(red) with connections drawn
+
+Contact Info: Matthew Lindman - mrl5380@g.rit.edu, Trevor Dewall - td2334@g.rit.edu
