@@ -1,14 +1,15 @@
 rdplocationtracking-CSEC462-2171-lindman-dewall
-Matthew Lindman - mrl5380@g.rit.edu, Trevor Dewall - td2334@g.rit.edu
+ Matthew Lindman - mrl5380@g.rit.edu, Trevor Dewall - td2334@g.rit.edu
 
 
 RDP Location Tracking Tool
 --------------------------------------------------
 
 Prerequisites:
+--------------------------------------------------
 Webserver with csv data
 Javascript, SVG, CSS3 capable browser ie Firefo, Chrome, Safari, Opera, IE9+
---------------------------------------------------
+
 
 Purpose:
 This tool is designed to give an immediate visual representation of remote desktop connections from client(red) to host(blue).
