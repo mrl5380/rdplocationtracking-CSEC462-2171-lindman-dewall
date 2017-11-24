@@ -1,7 +1,7 @@
 rdplocationtracking-CSEC462-2171-lindman-dewall
 
 RDP Location Tracking Tool
-Matthew Lindman, Trevor Dewall
+Matthew Lindman - mrl5380@g.rit.edu, Trevor Dewall - td2334@g.rit.edu
 --------------------------------------------------
 
 Prerequisites:
